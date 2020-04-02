@@ -71,16 +71,15 @@ jobs:
       run: |
           cd openwrt
           make -j1 V=s
-
-    - name: Assemble artifact
+          
+    - name: Build firmware
+      working-directory: ./openwrt
       run: |
-          rm -rf ./artifact/
-          mkdir -p ./artifact/
-          find openwrt/bin/targets/ -name "*sysupgrade*bin*" | xargs -i mv -f {} ./artifact/
-          find openwrt/bin/targets/ -name "*combined*img*" | xargs -i mv -f {} ./artifact/
-
-    - name: Upload artifact
+        echo -e "$(nproc) thread build."
+        make -j$(nproc) V=s
+        
+    - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt firmware
-        path: ./artifact/
+        name: OpenWrt
+        path: openwrt/bin
